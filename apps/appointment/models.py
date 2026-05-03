@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, DateTimeField, DateField
+from mongoengine import Document, StringField, EmailField, DateTimeField, DateField, ReferenceField
 import datetime
 from django.db import models
 
@@ -6,20 +6,33 @@ from django.db import models
 STATUS_CHOICES = [
     ('scheduled', 'Scheduled'),
     ('finished', 'Finished'),
+    ('canceled', 'Canceled'),
 ]
 
 # Create your models here.
 class Appointment(Document):
-    userId = StringField(required=True)
-    username = StringField(max_length=50)
-    hospitalId = StringField(required=True)
-    hospitalName = StringField(max_length=50)
-    poliId = StringField(required=True)
-    poliName = StringField(max_length=50)
-    doctorId = StringField(required=True)
-    doctorName = StringField(max_length=50)
+    user = ReferenceField('User', required=True)
+    hospital = ReferenceField('Hospital', required=True)
+    poli = ReferenceField('Poli', required=True)
+    doctor = ReferenceField('Doctor', required=True)
+    
     date = DateField(required=True)
     time = StringField(required=True)
     reason = StringField(required=True)
     status = StringField(required=True, choices=STATUS_CHOICES, default='scheduled')
     create_at = DateTimeField(default=datetime.datetime.now())
+
+    meta = {'collection': 'appointments'}
+
+class Diagnoses(Document):
+    appointment = ReferenceField(Appointment, required=True)
+    description = StringField(required=True)
+    create_at = DateTimeField(default=datetime.datetime.now())
+    meta = {'collection': 'diagnoses'}
+
+class Medicines(Document):
+    diagnosis = ReferenceField(Diagnoses, required=True)
+    medicine = StringField(required=True)
+    dosage = StringField(required=True)
+    create_at = DateTimeField(default=datetime.datetime.now())
+    meta = {'collection': 'medicines'}

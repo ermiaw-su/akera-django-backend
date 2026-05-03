@@ -18,7 +18,7 @@ GENDER_CHOICES = [
 # Create your models here.
 class User(Document):
     username = StringField(max_length=50, unique=True, required=True)
-    email = EmailField(max_length=50, required=True)
+    email = EmailField(max_length=50)
     password = StringField(max_length=100, required=True)
     role = StringField(max_length=15, choices=ROLES_CHOICES, default='user')
     create_at = DateTimeField(default=datetime.datetime.now())
